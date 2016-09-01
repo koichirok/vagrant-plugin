@@ -10,6 +10,8 @@ import java.io.File;
 import hudson.Proc;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
+import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 
 import java.io.IOException;
 import java.util.List;
@@ -102,6 +104,12 @@ public class VagrantWrapper {
       this.vagrantFileName = "Vagrantfile";
       this.containingFolder = build.getWorkspace();
     } else {
+      String vagrantFile = null;
+      try {
+        vagrantFile = TokenMacro.expandAll(build, listener, this.vagrantFile);
+      } catch (MacroEvaluationException|IOException|InterruptedException e) {
+        this.log("Error evaluating token: " + e.getMessage());
+      }
       File file = new File(vagrantFile);
       this.vagrantFileName = file.getName();
       this.containingFolder = new FilePath(launcher.getChannel(), file.isAbsolute() ? file.getAbsoluteFile().getParent() : new File(build.getWorkspace().getRemote() + "/" + vagrantFile).getParent());
@@ -143,6 +151,12 @@ public class VagrantWrapper {
       joinedEnvVars.putAll(additionalEnvVars);
     }
     args.add(0, "vagrant");
+
+    try {
+      command = TokenMacro.expandAll(build, listener, command);
+    } catch (MacroEvaluationException e) {
+      this.log("Error evaluating token: " + e.getMessage());
+    }
     args.add(1, command);
 
     if (this.getVagrantVm() != null && !this.getVagrantVm().isEmpty()) {

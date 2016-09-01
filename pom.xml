@@ -19,6 +19,10 @@
     </license>
   </licenses>
 
+  <properties>
+    <java.level>7</java.level>
+  </properties>
+
   <developers>
     <developer>
       <id>ShimiTaNaka</id>
@@ -47,6 +51,14 @@
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/vagrant-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/vagrant-plugin</url>
   </scm>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>token-macro</artifactId>
+      <version>1.12.1</version>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
